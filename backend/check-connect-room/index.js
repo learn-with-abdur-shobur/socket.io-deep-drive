@@ -31,6 +31,11 @@ io.on('connection', (socket) => {
 	io.sockets.in('room-2').emit('r2', 'hello room-2');
 });
 
+io.on('hello', (arg, callback) => {
+	console.log(arg); // "world"
+	callback('got it');
+});
+
 server.listen(3000, () => {
 	console.log('listening on *:3000');
 });

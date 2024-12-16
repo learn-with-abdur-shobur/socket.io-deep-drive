@@ -91,6 +91,10 @@
 				messages.appendChild(item);
 				window.scrollTo(0, document.body.scrollHeight);
 			});
+
+			socket.emit('hello', 'world', (response) => {
+				console.log(response); // "got it"
+			});
 		</script>
 	</body>
 </html>

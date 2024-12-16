@@ -22,6 +22,18 @@
 				box-sizing: border-box;
 				backdrop-filter: blur(10px);
 			}
+			#joinRomm {
+				background: rgba(0, 0, 0, 0.15);
+				padding: 0.25rem;
+				position: fixed;
+				bottom: 50px;
+				left: 0;
+				right: 0;
+				display: flex;
+				height: 3rem;
+				box-sizing: border-box;
+				backdrop-filter: blur(10px);
+			}
 			#input {
 				border: none;
 				padding: 0 1rem;
@@ -32,7 +44,7 @@
 			#input:focus {
 				outline: none;
 			}
-			#form > button {
+			form > button {
 				background: #333;
 				border: none;
 				padding: 0 1rem;
@@ -57,14 +69,22 @@
 	</head>
 	<body>
 		<h1>Socket.IO chat</h1>
+		<p id="socketId"></p>
 		<ul id="messages"></ul>
 		<form id="form" action="">
 			<input id="input" autocomplete="off" /><button type="submit">Send</button>
+		</form>
+		<form id="joinRomm" action="">
+			<input id="input" autocomplete="off" /><button type="submit">Join</button>
 		</form>
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script>
 			var socket = io();
+			function ViewId() {
+				const socketId = document.getElementById('socketId');
+				socketId.innerText = socket.id;
+			}
 
 			var messages = document.getElementById('messages');
 			var form = document.getElementById('form');
@@ -73,23 +93,20 @@
 			form.addEventListener('submit', function (e) {
 				e.preventDefault();
 				if (input.value) {
-					socket.emit('chat message', input.value);
+					socket.emit('get-message', input.value);
 					input.value = '';
 				}
 			});
 
-			// socket.on('check1', function (msg) {
-			// 	var item = document.createElement('li');
-			// 	item.textContent = msg;
-			// 	messages.appendChild(item);
-			// 	window.scrollTo(0, document.body.scrollHeight);
-			// });
-
-			socket.on('chat_transfer', function (msg) {
+			socket.on('return-message', function (msg) {
 				var item = document.createElement('li');
 				item.textContent = msg;
 				messages.appendChild(item);
 				window.scrollTo(0, document.body.scrollHeight);
+			});
+
+			socket.on('connect', () => {
+				ViewId();
 			});
 		</script>
 	</body>
