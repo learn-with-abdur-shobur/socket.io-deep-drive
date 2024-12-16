@@ -75,25 +75,46 @@
 			<input id="input" autocomplete="off" /><button type="submit">Send</button>
 		</form>
 		<form id="joinRomm" action="">
-			<input id="input" autocomplete="off" /><button type="submit">Join</button>
+			<input id="joinInput" autocomplete="off" /><button type="submit">
+				Join
+			</button>
 		</form>
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script>
 			var socket = io();
-			function ViewId() {
-				const socketId = document.getElementById('socketId');
-				socketId.innerText = socket.id;
+			const socketId = document.getElementById('socketId');
+			function ViewId(text) {
+				socketId.innerText = text;
 			}
 
 			var messages = document.getElementById('messages');
 			var form = document.getElementById('form');
 			var input = document.getElementById('input');
+			var joinRomm = document.getElementById('joinRomm');
+			var joinInput = document.getElementById('joinInput');
+			var currentRoom = ''; // Track the current room
+
+			joinRomm.addEventListener('submit', function (e) {
+				e.preventDefault();
+				if (joinInput.value) {
+					currentRoom = joinInput.value; // Save the current room
+					socket.emit('join-room', currentRoom, (view) => {
+						console.log(view);
+						ViewId(view);
+					});
+					joinInput.value = '';
+				}
+			});
 
 			form.addEventListener('submit', function (e) {
 				e.preventDefault();
 				if (input.value) {
-					socket.emit('get-message', input.value);
+					// Send the message along with the current room
+					socket.emit('get-message', {
+						message: input.value,
+						room: currentRoom,
+					});
 					input.value = '';
 				}
 			});
@@ -106,7 +127,7 @@
 			});
 
 			socket.on('connect', () => {
-				ViewId();
+				ViewId(socket.id);
 			});
 		</script>
 	</body>
